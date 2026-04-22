@@ -1,14 +1,14 @@
 package Client.View;
+
 import java.util.Scanner;
 import Client.Controller.Controller;
 
 public class View {
-    private Controller controller = null;
-    Scanner scanner = new Scanner(System.in);
+    private final Controller controller;
+    private final Scanner scanner = new Scanner(System.in);
 
-
-    public View(Controller Controller){
-        this.controller = Controller;
+    public View(Controller controller) {
+        this.controller = controller;
     }
 
 
@@ -19,42 +19,56 @@ public class View {
         System.out.print("Select an option: ");
 
         String choice = scanner.nextLine();
-
-        switch (choice) {
-            case "1":
-                this.startGame();
-                break;
-            case "0":
-                System.out.println("Exiting game. Goodbye!");
-                break;
-            default:
-                System.out.println("Error: Invalid option. Please try again.");
+        if ("1".equals(choice)) {
+            this.startGame();
+        } else if ("0".equals(choice)) {
+            System.exit(0);
+        } else {
+            System.out.println("Invalid option.");
+            displayInterface();
         }
     }
 
 
-    public void displayGameInterface(char[][] field, char current_move){
-        System.out.println("\n--- Game field ---");
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < 3; j++){
-                System.out.print(field[i][j] +" ");
+    public void displayGameInterface(char[][] field, char myMark) {
+        System.out.println("\n--- Current Board ---");
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                System.out.print(field[i][j] + " ");
             }
             System.out.println();
         }
-        System.out.print("Player " + current_move + " move (1 2, 2 3):");
+
+        System.out.println("Your mark: " + myMark);
+        System.out.print("Enter move 'row col' (e.g., 1 2) or 'stop': ");
+
         String move = scanner.nextLine();
-        this.controller.makeMove(move);
+        if (move.equalsIgnoreCase("stop")) {
+            System.exit(0);
+        } else {
+            this.controller.makeMove(move);
+        }
     }
 
 
-    public void startGame(){
-        System.out.println("Choose sign for player 1 (X or O): ");
-        String sign = scanner.nextLine();
-        this.controller.setSign(sign);
+    public void printOnlyField(char[][] field) {
+        System.out.println("\n--- Current Board (Waiting for opponent) ---");
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                System.out.print(field[i][j] + " ");
+            }
+            System.out.println();
+        }
     }
 
 
-    public void showMessage(String message){
-        System.out.println(message);
+    public void startGame() {
+        System.out.println("Connecting to session...");
+        this.controller.startGame();
+    }
+
+
+    public void showMessage(String message) {
+        System.out.println("[SERVER]: " + message);
     }
 }
